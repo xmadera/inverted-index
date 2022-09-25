@@ -1,5 +1,5 @@
-from project_name.my_module import main
+from project_name.my_module import inverted_index_of
 
 __all__ = [
-    'main',
+    'inverted_index_of',
 ]
