@@ -1,7 +1,7 @@
 import re
 import urllib.request
 import string
-import pprint
+# import pprint
 import nltk
 
 
@@ -52,12 +52,12 @@ def inverted_index_of(document_list):
     return inv_idx_dict
 
 
-if __name__ == '__main__':
-    pprint.pprint(inverted_index_of([
-        ("001", "https://www.gutenberg.org/cache/epub/69042/pg69042.txt"),
-        ("002", "https://www.gutenberg.org/cache/epub/69035/pg69035.txt"),
-        ("003", "https://www.gutenberg.org/cache/epub/69040/pg69040.txt")
-    ]))
+# if __name__ == '__main__':
+#     pprint.pprint(inverted_index_of([
+#         ("001", "https://www.gutenberg.org/cache/epub/69042/pg69042.txt"),
+#         ("002", "https://www.gutenberg.org/cache/epub/69035/pg69035.txt"),
+#         ("003", "https://www.gutenberg.org/cache/epub/69040/pg69040.txt")
+#     ]))
 
 # TODO: Remove prepositions, conjunctions etc.. from documents
 # https://stackoverflow.com/questions/24406201/how-do-i-remove-verbs-prepositions-conjunctions-etc-from-my-text
