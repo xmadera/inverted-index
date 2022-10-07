@@ -10,7 +10,7 @@
 
 ```bash
 # Install tool
-pip3 install project_name
+pip3 install inverted_index
 
 # Install locally
 make install
