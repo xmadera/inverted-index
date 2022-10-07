@@ -2,11 +2,13 @@ import re
 import string
 import urllib.request
 import nltk
-from googletrans import Translator
+
+
+# from googletrans import Translator
 
 
 def inverted_index_of(document_list):
-    translator = Translator()
+    # translator = Translator()
 
     document_object = {}
 
@@ -29,9 +31,9 @@ def inverted_index_of(document_list):
 
             formatted_without_empty = list(filter(None, formatted_without_punctuations))
 
-            for word in formatted_without_empty:
-                translated = translator.detect(word)
-                # print(translated)
+            # for word in formatted_without_empty:
+            # translated = translator.detect(word)
+            # print(translated)
 
             data_into_list.extend(formatted_without_empty)
 
