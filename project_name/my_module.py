@@ -4,6 +4,19 @@ import string
 # import pprint
 import nltk
 
+""" Could be additional patterns for nltk tagger """
+# patterns = [
+#     (r'\d+\.\d+|\d+', 'num'),          # nums
+#     (r'.*ing$', 'VBG'),                # gerunds
+#     (r'.*ed$', 'VBD'),                 # simple past
+#     (r'.*es$', 'VBZ'),                 # 3rd singular present
+#     (r'.*ould$', 'MD'),                # modals
+#     (r'.*\'s$', 'NN$'),                # possessive nouns
+#     (r'.*s$', 'NNS'),                  # plural nouns
+#     (r'^-?[0-9]+(\.[0-9]+)?$', 'CD'),  # cardinal numbers
+#     (r'.*', 'NN')                      # nouns (default)
+# ]
+
 
 def inverted_index_of(document_list):
     document_object = {}
@@ -27,7 +40,8 @@ def inverted_index_of(document_list):
         data_into_list_tagged = nltk.pos_tag(data_into_list)
         for tagged_word in data_into_list_tagged:
             # TODO: Add next tag keys
-            if tagged_word[1] == "CC" or tagged_word[1] == "TO":
+            if tagged_word[1] == "CC" or tagged_word[1] == "TO" or tagged_word[1] == "NN" or tagged_word[1] == "SYM" or \
+                    tagged_word[1] == "CD":
                 data_into_list.remove(tagged_word[0])
 
         """ Save non inverted index dictionary"""
@@ -50,7 +64,6 @@ def inverted_index_of(document_list):
 
     # pprint.pprint(inv_idx_dict)
     return inv_idx_dict
-
 
 # if __name__ == '__main__':
 #     pprint.pprint(inverted_index_of([
