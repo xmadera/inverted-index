@@ -1,5 +1,4 @@
 import pprint
-
 import inverted_index
 
 

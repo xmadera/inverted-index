@@ -65,6 +65,7 @@ def inverted_index_of(document_list):
     # pprint.pprint(inv_idx_dict)
     return inv_idx_dict
 
+
 # TODO: Remove prepositions, conjunctions etc.. from documents
 # https://stackoverflow.com/questions/24406201/how-do-i-remove-verbs-prepositions-conjunctions-etc-from-my-text
 # https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
