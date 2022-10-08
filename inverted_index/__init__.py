@@ -1,5 +1,5 @@
-from inverted_index.my_module import inverted_index_of
+from inverted_index.my_module import main
 
 __all__ = [
-    'inverted_index_of',
+    'main',
 ]

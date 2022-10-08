@@ -30,16 +30,15 @@ black-check:
 	$(VIRTUAL_BIN)/black $(PROJECT_NAME)/ $(TEST_DIR)/ --check
 
 ## format - Runs all formatting tools against the project
-format: black isort lint mypy
+format: black isort lint
 
 ## format-check - Checks if the project is formatted correctly against all formatting rules
-format-check: black-check isort-check lint mypy
+format-check: black-check isort-check lint
 
 ## install - Install the project locally
 install:
 	$(PYTHON_BINARY) -m venv $(VIRTUAL_ENV)
 	$(VIRTUAL_BIN)/pip install -e ."[dev]"
-	$(VIRTUAL_BIN)/pip install nltk
 
 ## isort - Sorts imports throughout the project
 isort:
@@ -52,10 +51,6 @@ isort-check:
 ## lint - Lint the project
 lint:
 	$(VIRTUAL_BIN)/flake8 $(PROJECT_NAME)/ $(TEST_DIR)/
-
-## mypy - Run mypy type checking on the project
-mypy:
-	$(VIRTUAL_BIN)/mypy $(PROJECT_NAME)/ $(TEST_DIR)/
 
 ## test - Test the project
 test:
