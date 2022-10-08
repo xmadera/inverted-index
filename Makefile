@@ -39,6 +39,7 @@ format-check: black-check isort-check lint mypy
 install:
 	$(PYTHON_BINARY) -m venv $(VIRTUAL_ENV)
 	$(VIRTUAL_BIN)/pip install -e ."[dev]"
+	$(VIRTUAL_BIN)/pip install nltk
 
 ## isort - Sorts imports throughout the project
 isort:
