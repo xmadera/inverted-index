@@ -1,6 +1,6 @@
 name: build
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   lint:
@@ -13,14 +13,16 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install Dependencies
-        run: make install
+        run: |
+          make install
+          fi python -m nltk.downloader all
       - name: Check format
         run: make format-check
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pythonversion: ["3.9", "3.10"]
+        pythonversion: [ "3.9", "3.10" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -29,7 +31,9 @@ jobs:
         with:
           python-version: ${{ matrix.pythonversion }}
       - name: Install Dependencies
-        run: make install
+        run: |
+          make install
+          fi python -m nltk.downloader all
       - name: Run tests
         run: make coverage
       - name: Coveralls
