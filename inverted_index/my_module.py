@@ -1,28 +1,12 @@
-import pprint
 import re
 import string
 import urllib.request
 
 import nltk
-
-# from googletrans import Translator
-
-
-def main():
-    pprint.pprint(
-        inverted_index_of(
-            [
-                ("001", "https://www.gutenberg.org/cache/epub/69042/pg69042.txt"),
-                ("002", "https://www.gutenberg.org/cache/epub/69035/pg69035.txt"),
-                ("003", "https://www.gutenberg.org/cache/epub/69040/pg69040.txt"),
-            ]
-        )
-    )
+from langdetect import detect
 
 
 def inverted_index_of(document_list):
-    # translator = Translator()
-
     document_object = {}
 
     for doc_id, doc_url in document_list:
@@ -44,10 +28,6 @@ def inverted_index_of(document_list):
 
             formatted_without_empty = list(filter(None, formatted_without_punctuations))
 
-            # for word in formatted_without_empty:
-            # translated = translator.detect(word)
-            # print(translated)
-
             data_into_list.extend(formatted_without_empty)
 
         data_into_list = list(dict.fromkeys(data_into_list))
@@ -58,6 +38,10 @@ def inverted_index_of(document_list):
             # TODO: Add next tag keys
             if tagged_word[1] == "CC" or tagged_word[1] == "TO" or not tagged_word[0]:
                 data_into_list.remove(tagged_word[0])
+
+        for word in data_into_list:
+            lang = detect(word)
+            print(lang)
 
         """ Save non inverted index dictionary"""
         document_object[doc_id] = data_into_list
