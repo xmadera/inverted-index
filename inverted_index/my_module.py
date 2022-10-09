@@ -1,15 +1,15 @@
+import json
 import re
 import string
 import urllib.request
 
-import cld3._cld3 as cld3
-
-# import pprint
+from cld3 import _cld3 as cld3
 import nltk
+from dict2xml import dict2xml
 
 
 def inverted_index_of(document_list):
-    document_object = {}
+    document_dictionary = {}
 
     for doc_url in document_list:
         # Init variables for every document
@@ -67,42 +67,47 @@ def inverted_index_of(document_list):
         """ Tagged list --> To remove conjunctions, prepositions, etc.. """
         data_into_list_tagged = nltk.pos_tag(data_into_list)
         for tagged_word in data_into_list_tagged:
-            # TODO: Add next tag keys
-            if tagged_word[1] == "CC" or tagged_word[1] == "TO" or not tagged_word[0]:
+            if tagged_word[1] == "CC" or tagged_word[1] == "TO" or tagged_word[1] == "IN" or tagged_word[
+                1] == "DT" or not tagged_word[0]:
                 data_into_list.remove(tagged_word[0])
 
         """ Remove non-english words --> (extension) choose language """
+        language_list = []
         for word in data_into_list:
-            print(word)
-            print(cld3.get_language(word))
+            language_detection = cld3.get_language(word)
+            language_list.append(language_detection)
 
         """ Save non inverted index dictionary"""
-        document_object[document_id] = data_into_list
+        document_dictionary[document_id] = data_into_list
 
         with open(str(document_id) + '.txt', 'w') as f:
             f.write('METADATA\n\n')
             for key, value in document_metadata.items():
                 f.write('%s: %s\n' % (key, value))
         f.close()
-        # pprint.pprint(document_metadata)
-        # print(data_into_list)
 
     """ Convert to inverted index dictionary"""
-    inv_idx_dict = dict()
-    for key in document_object:
-        # Go through the list that is saved in the document_object:
-        for item in document_object[key]:
-            # Check if in the inverted dict (inv_idx_dict) the key exists
-            if item not in inv_idx_dict:
+    inv_idx_document_dict = dict()
+    for key in document_dictionary:
+        # Go through the list that is saved in the document_dictionary:
+        for item in document_dictionary[key]:
+            # Check if in the inverted dict (inv_idx_document_dict) the key exists
+            if item not in inv_idx_document_dict:
                 # If not create a new list
-                inv_idx_dict[item] = [key]
+                inv_idx_document_dict[item] = [key]
             else:
-                inv_idx_dict[item].append(key)
+                inv_idx_document_dict[item].append(key)
 
-    # pprint.pprint(inv_idx_dict)
-    return inv_idx_dict
+    # Serializing into xml
+    xml = dict2xml(inv_idx_document_dict)
+    # print(xml)
 
+    # Serializing into json
+    json_object = json.dumps(inv_idx_document_dict, indent=4)
+    # print(json_object)
 
-# TODO: Remove prepositions, conjunctions etc.. from documents
+    return inv_idx_document_dict
+
+# Remove prepositions, conjunctions etc.. from documents
 # https://stackoverflow.com/questions/24406201/how-do-i-remove-verbs-prepositions-conjunctions-etc-from-my-text
 # https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
