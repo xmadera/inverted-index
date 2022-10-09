@@ -1,7 +1,7 @@
 import re
 import string
 import urllib.request
-
+# import pprint
 import nltk
 from langdetect import detect
 
@@ -10,23 +10,49 @@ def inverted_index_of(document_list):
     document_object = {}
 
     for doc_url in document_list:
+        # Init variables for every document
         data_into_list = []
         document_id = 0
+        document_metadata = {
+            "ID": 0,
+            "Title": "",
+            "Author": "",
+            "Release Date": "",
+            "Produced by": ""
+        }
 
         """ Open txt from url """
         document = urllib.request.urlopen(doc_url)
 
         for line in document.readlines():
-            # Get book ID from document
-            match_document_id = re.findall('eBook #(\d+)', line.decode('utf-8'))
-            if match_document_id:
-                document_id = int(match_document_id[0])
+
+            """ Get book ID from document """
+            if document_id == 0:
+                match_document_id = re.findall('eBook #(\d+)', line.decode('utf-8'))
+                if match_document_id:
+                    document_id = int(match_document_id[0])
+                    document_metadata["ID"] = int(match_document_id[0])
 
             """ Reading metadata """
             # Metadata such as [Title, Author, Release Date, Language, Produced by]
-            # if "Title:" in line.decode('utf-8'):
-            #     print(line)
+            if document_metadata["Title"] == "":
+                match_title = re.findall('^Title: (.+)', line.decode('utf-8'))
+                if match_title:
+                    document_metadata["Title"] = match_title[0].rstrip()
+            if document_metadata["Author"] == "":
+                match_title = re.findall('^Author: (.+)', line.decode('utf-8'))
+                if match_title:
+                    document_metadata["Author"] = match_title[0].rstrip()
+            if document_metadata["Release Date"] == "":
+                match_title = re.findall('^Release Date: (.+)', line.decode('utf-8'))
+                if match_title:
+                    document_metadata["Release Date"] = match_title[0].rstrip()
+            if document_metadata["Produced by"] == "":
+                match_title = re.findall('^Produced by: (.+)', line.decode('utf-8'))
+                if match_title:
+                    document_metadata["Produced by"] = match_title[0].rstrip()
 
+            """ Cleaning & formatting document text """
             # remove numbers
             line_without_numbers = re.sub(r'\d+', '', line.decode('utf-8').lower())
 
@@ -43,19 +69,23 @@ def inverted_index_of(document_list):
 
         data_into_list = list(dict.fromkeys(data_into_list))
 
-        """ Tagged list --> To remove conjunctions, prepositions, etc.."""
+        """ Tagged list --> To remove conjunctions, prepositions, etc.. """
         data_into_list_tagged = nltk.pos_tag(data_into_list)
         for tagged_word in data_into_list_tagged:
             # TODO: Add next tag keys
             if tagged_word[1] == "CC" or tagged_word[1] == "TO" or not tagged_word[0]:
                 data_into_list.remove(tagged_word[0])
 
+        """ Remove non-english words --> (extension) choose language """
         for word in data_into_list:
             lang = detect(word)
-            # print(lang)
+            if lang != "en":
+                data_into_list.remove(word)
 
         """ Save non inverted index dictionary"""
         document_object[document_id] = data_into_list
+
+        # pprint.pprint(document_metadata)
         # print(data_into_list)
 
     """ Convert to inverted index dictionary"""
