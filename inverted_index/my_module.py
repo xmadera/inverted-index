@@ -85,6 +85,11 @@ def inverted_index_of(document_list):
         """ Save non inverted index dictionary"""
         document_object[document_id] = data_into_list
 
+        with open(str(document_id)+'.txt', 'w') as f:
+            f.write('METADATA\n\n')
+            for key, value in document_metadata.items():
+                f.write('%s: %s\n' % (key, value))
+        f.close()
         # pprint.pprint(document_metadata)
         # print(data_into_list)
 
