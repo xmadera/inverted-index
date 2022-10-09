@@ -1,9 +1,11 @@
 import re
 import string
 import urllib.request
+
+import cld3._cld3 as cld3
+
 # import pprint
 import nltk
-from langdetect import detect
 
 
 def inverted_index_of(document_list):
@@ -13,22 +15,15 @@ def inverted_index_of(document_list):
         # Init variables for every document
         data_into_list = []
         document_id = 0
-        document_metadata = {
-            "ID": 0,
-            "Title": "",
-            "Author": "",
-            "Release Date": "",
-            "Produced by": ""
-        }
+        document_metadata = {"ID": 0, "Title": "", "Author": "", "Release Date": "", "Produced by": ""}
 
         """ Open txt from url """
         document = urllib.request.urlopen(doc_url)
 
         for line in document.readlines():
-
-            """ Get book ID from document """
+            """Get book ID from document"""
             if document_id == 0:
-                match_document_id = re.findall('eBook #(\d+)', line.decode('utf-8'))
+                match_document_id = re.findall(r'eBook #(\d+)', line.decode('utf-8'))
                 if match_document_id:
                     document_id = int(match_document_id[0])
                     document_metadata["ID"] = int(match_document_id[0])
@@ -78,14 +73,13 @@ def inverted_index_of(document_list):
 
         """ Remove non-english words --> (extension) choose language """
         for word in data_into_list:
-            lang = detect(word)
-            if lang != "en":
-                data_into_list.remove(word)
+            print(word)
+            print(cld3.get_language(word))
 
         """ Save non inverted index dictionary"""
         document_object[document_id] = data_into_list
 
-        with open(str(document_id)+'.txt', 'w') as f:
+        with open(str(document_id) + '.txt', 'w') as f:
             f.write('METADATA\n\n')
             for key, value in document_metadata.items():
                 f.write('%s: %s\n' % (key, value))
@@ -107,6 +101,7 @@ def inverted_index_of(document_list):
 
     # pprint.pprint(inv_idx_dict)
     return inv_idx_dict
+
 
 # TODO: Remove prepositions, conjunctions etc.. from documents
 # https://stackoverflow.com/questions/24406201/how-do-i-remove-verbs-prepositions-conjunctions-etc-from-my-text
