@@ -9,13 +9,24 @@ from langdetect import detect
 def inverted_index_of(document_list):
     document_object = {}
 
-    for doc_id, doc_url in document_list:
+    for doc_url in document_list:
         data_into_list = []
+        document_id = 0
 
         """ Open txt from url """
         document = urllib.request.urlopen(doc_url)
 
         for line in document.readlines():
+            # Get book ID from document
+            match_document_id = re.findall('eBook #(\d+)', line.decode('utf-8'))
+            if match_document_id:
+                document_id = int(match_document_id[0])
+
+            """ Reading metadata """
+            # Metadata such as [Title, Author, Release Date, Language, Produced by]
+            # if "Title:" in line.decode('utf-8'):
+            #     print(line)
+
             # remove numbers
             line_without_numbers = re.sub(r'\d+', '', line.decode('utf-8').lower())
 
@@ -41,10 +52,10 @@ def inverted_index_of(document_list):
 
         for word in data_into_list:
             lang = detect(word)
-            print(lang)
+            # print(lang)
 
         """ Save non inverted index dictionary"""
-        document_object[doc_id] = data_into_list
+        document_object[document_id] = data_into_list
         # print(data_into_list)
 
     """ Convert to inverted index dictionary"""
@@ -61,7 +72,6 @@ def inverted_index_of(document_list):
 
     # pprint.pprint(inv_idx_dict)
     return inv_idx_dict
-
 
 # TODO: Remove prepositions, conjunctions etc.. from documents
 # https://stackoverflow.com/questions/24406201/how-do-i-remove-verbs-prepositions-conjunctions-etc-from-my-text
