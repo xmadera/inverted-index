@@ -17,12 +17,14 @@ def inverted_index_of(document_list):
     document_dictionary = {}
     document_dictionary_metadata = {}
     word_dictionary_language = {}
+    word_dictionary_chapters = {}
 
     for doc_url in document_list:
         # Init variables for every document
         data_into_list = []
         document_id = 0
         document_metadata = {"id": "", "title": "", "author": "", "release_date": "", "produced_by": ""}
+        current_chapter = ""
 
         """ Open txt from url """
         document = urlopen(doc_url, context=ctx)
@@ -32,9 +34,15 @@ def inverted_index_of(document_list):
 
             document_id = handle_metadata(decoded_line, document_id, document_metadata)
 
-            handle_text_line(data_into_list, decoded_line)
+            handle_text_line(current_chapter, data_into_list, decoded_line)
 
         data_into_list = list(dict.fromkeys(data_into_list))
+
+        for word in data_into_list:
+            if word not in word_dictionary_chapters:
+                word_dictionary_chapters[word] = [current_chapter]
+            else:
+                word_dictionary_chapters[word].append(current_chapter)
 
         tag_word_list(data_into_list)
 
@@ -90,7 +98,7 @@ def handle_documents_serialization(document_dictionary_metadata):
 
 
 def convert_word_dictionary_to_inverted_index(document_dictionary):
-    """ Convert to inverted index dictionary """
+    """Convert to inverted index dictionary"""
     inv_idx_document_dict = dict()
     for key in document_dictionary:
         # Go through the list that is saved in the document_dictionary:
@@ -101,32 +109,33 @@ def convert_word_dictionary_to_inverted_index(document_dictionary):
                 inv_idx_document_dict[item] = [{"document_id": [key]}]
             else:
                 inv_idx_document_dict[item][0]["document_id"].append(key)
+
     return inv_idx_document_dict
 
 
 def get_word_language(data_into_list, word_dictionary_language):
-    """  Save word language detection into dictionary """
+    """Save word language detection into dictionary"""
     for word in data_into_list:
         language_detection = cld3.get_language(word)
         word_dictionary_language[word] = language_detection
 
 
 def tag_word_list(data_into_list):
-    """ Tagged list --> To remove conjunctions, prepositions, etc.. """
+    """Tagged list --> To remove conjunctions, prepositions, etc.."""
     data_into_list_tagged = nltk.pos_tag(data_into_list)
     for tagged_word in data_into_list_tagged:
         if (
-                tagged_word[1] == "CC"
-                or tagged_word[1] == "TO"
-                or tagged_word[1] == "IN"
-                or tagged_word[1] == "DT"
-                or not tagged_word[0]
+            tagged_word[1] == "CC"
+            or tagged_word[1] == "TO"
+            or tagged_word[1] == "IN"
+            or tagged_word[1] == "DT"
+            or not tagged_word[0]
         ):
             data_into_list.remove(tagged_word[0])
 
 
-def handle_text_line(data_into_list, decoded_line):
-    """ Cleaning & formatting document text """
+def handle_text_line(current_chapter, data_into_list, decoded_line):
+    """Cleaning & formatting document text"""
     # remove numbers
     line_without_numbers = re.sub(r'\d+', '', decoded_line.lower())
     formatted_line = re.split(r'\W+', line_without_numbers)
@@ -135,7 +144,13 @@ def handle_text_line(data_into_list, decoded_line):
     punctuations = str.maketrans('', '', string.punctuation)
     formatted_without_punctuations = [w.translate(punctuations) for w in formatted_line]
     formatted_without_empty = list(filter(None, formatted_without_punctuations))
+
     data_into_list.extend(formatted_without_empty)
+
+    # TODO chapter
+    # if (len(formatted_without_empty) == 1):
+    #     if (is_roman_number(formatted_without_empty[0].upper())):
+    #         current_chapter = formatted_without_empty[0]
 
 
 def handle_metadata(decoded_line, document_id, document_metadata):
@@ -166,6 +181,24 @@ def handle_metadata(decoded_line, document_id, document_metadata):
             document_metadata["produced_by"] = match_title[0].rstrip()
 
     return document_id
+
+
+def is_roman_number(num):
+    pattern = re.compile(
+        r"""   
+                                ^M{0,3}
+                                (CM|CD|D?C{0,3})?
+                                (XC|XL|L?X{0,3})?
+                                (IX|IV|V?I{0,3})?$
+            """,
+        re.VERBOSE,
+    )
+
+    if re.match(pattern, num):
+        return True
+
+    return False
+
 
 # Remove prepositions, conjunctions etc.. from documents
 # https://stackoverflow.com/questions/24406201/how-do-i-remove-verbs-prepositions-conjunctions-etc-from-my-text
