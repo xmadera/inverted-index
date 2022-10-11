@@ -25,12 +25,14 @@ def inverted_index_of(document_list):
         document_metadata = {"id": "", "title": "", "author": "", "release_date": "", "produced_by": ""}
 
         """ Open txt from url """
-        document = urlopen(doc_url)
+        document = urlopen(doc_url, context=ctx)
 
         for line in document.readlines():
+            decoded_line = line.decode('utf-8')
+
             """Get book ID from document"""
             if document_id == 0:
-                match_document_id = re.findall(r'eBook #(\d+)', line.decode('utf-8'))
+                match_document_id = re.findall(r'eBook #(\d+)', decoded_line)
                 if match_document_id:
                     document_id = match_document_id[0]
                     document_metadata["id"] = int(match_document_id[0])
@@ -38,25 +40,25 @@ def inverted_index_of(document_list):
             """ Reading metadata """
             # Metadata such as [Title, Author, Release Date, Language, Produced by]
             if document_metadata["title"] == "":
-                match_title = re.findall('^Title: (.+)', line.decode('utf-8'))
+                match_title = re.findall('^Title: (.+)', decoded_line)
                 if match_title:
                     document_metadata["title"] = match_title[0].rstrip()
             if document_metadata["author"] == "":
-                match_title = re.findall('^Author: (.+)', line.decode('utf-8'))
+                match_title = re.findall('^Author: (.+)', decoded_line)
                 if match_title:
                     document_metadata["author"] = match_title[0].rstrip()
             if document_metadata["release_date"] == "":
-                match_title = re.findall('^Release Date: (.+)', line.decode('utf-8'))
+                match_title = re.findall('^Release Date: (.+)', decoded_line)
                 if match_title:
                     document_metadata["release_date"] = match_title[0].rstrip()
             if document_metadata["produced_by"] == "":
-                match_title = re.findall('^Produced by: (.+)', line.decode('utf-8'))
+                match_title = re.findall('^Produced by: (.+)', decoded_line)
                 if match_title:
                     document_metadata["produced_by"] = match_title[0].rstrip()
 
             """ Cleaning & formatting document text """
             # remove numbers
-            line_without_numbers = re.sub(r'\d+', '', line.decode('utf-8').lower())
+            line_without_numbers = re.sub(r'\d+', '', decoded_line.lower())
 
             formatted_line = re.split(r'\W+', line_without_numbers)
 
@@ -100,7 +102,7 @@ def inverted_index_of(document_list):
                 f.write('%s: %s\n' % (key, value))
         f.close()
 
-    """ Convert to inverted index dictionary"""
+    """ Convert to inverted index dictionary """
     inv_idx_document_dict = dict()
     for key in document_dictionary:
         # Go through the list that is saved in the document_dictionary:
@@ -108,9 +110,14 @@ def inverted_index_of(document_list):
             # Check if in the inverted dict (inv_idx_document_dict) the key exists
             if item not in inv_idx_document_dict:
                 # If not create a new list
-                inv_idx_document_dict[item] = [key]
+
+                inv_idx_document_dict[item] = [{"document_id": [key]}]
             else:
-                inv_idx_document_dict[item].append(key)
+                inv_idx_document_dict[item][0]["document_id"].append(key)
+
+    """ Add language object to inverted dictionary """
+    for key in inv_idx_document_dict:
+        inv_idx_document_dict[key].append({"language": word_dictionary_language[key].language})
 
     # Serialize into xml
     xml_document_metadata = '<?xml version="1.0" encoding="UTF-8"?>\n' + dict2xml(
@@ -141,8 +148,6 @@ def inverted_index_of(document_list):
     with open('words/words.json', 'w') as f:
         f.write(json_inc_idx_document)
     f.close()
-
-    return inv_idx_document_dict
 
 
 # Remove prepositions, conjunctions etc.. from documents
