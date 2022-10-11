@@ -1,7 +1,0 @@
-METADATA
-
-id: 69042
-title: Potemkin village
-author: Fletcher Pratt
-release_date: September 24, 2022 [eBook #69042]
-produced_by: Greg Weeks, Mary Meehan and the Online Distributed
