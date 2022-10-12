@@ -21,13 +21,13 @@ DEV_REQUIREMENTS = [
 ]
 
 setuptools.setup(
-    name='PROJECT_NAME_URL',
+    name='inverted_index',
     version='0.1.0',
-    description='Your project description here',
+    description='',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='http://github.com/USERNAME/PROJECT_NAME_URL',
-    author='USERNAME',
+    url='http://github.com/xmadera/inverted_index',
+    author='xmadera',
     license='MIT',
     packages=setuptools.find_packages(
         exclude=[
@@ -36,7 +36,7 @@ setuptools.setup(
         ]
     ),
     package_data={
-        'PROJECT_NAME_URL': [
+        'inverted_index': [
             'py.typed',
         ]
     },
@@ -51,7 +51,7 @@ setuptools.setup(
     },
     entry_points={
         'console_scripts': [
-            'PROJECT_NAME_URL=project_name.my_module:main',
+            'PROJECT_NAME_URL=inverted_index.my_module:main',
         ]
     },
     python_requires='>=3.7, <4',

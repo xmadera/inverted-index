@@ -1,7 +1,7 @@
 PYTHON_BINARY := python3
 VIRTUAL_ENV := venv
 VIRTUAL_BIN := $(VIRTUAL_ENV)/bin
-PROJECT_NAME := project_name
+PROJECT_NAME := inverted_index
 TEST_DIR := test
 
 ## help - Display help about make targets for this Makefile
@@ -30,10 +30,10 @@ black-check:
 	$(VIRTUAL_BIN)/black $(PROJECT_NAME)/ $(TEST_DIR)/ --check
 
 ## format - Runs all formatting tools against the project
-format: black isort lint mypy
+format: black isort lint
 
 ## format-check - Checks if the project is formatted correctly against all formatting rules
-format-check: black-check isort-check lint mypy
+format-check: black-check isort-check lint
 
 ## install - Install the project locally
 install:
@@ -51,10 +51,6 @@ isort-check:
 ## lint - Lint the project
 lint:
 	$(VIRTUAL_BIN)/flake8 $(PROJECT_NAME)/ $(TEST_DIR)/
-
-## mypy - Run mypy type checking on the project
-mypy:
-	$(VIRTUAL_BIN)/mypy $(PROJECT_NAME)/ $(TEST_DIR)/
 
 ## test - Test the project
 test:
